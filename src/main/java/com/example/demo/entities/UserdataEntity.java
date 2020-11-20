@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "Userdata", schema = "sharad_db")
+@Table(name = "Userdata", schema = "sharad")
 public class UserdataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,7 +36,6 @@ public class UserdataEntity {
     private Timestamp latestUpdated;
     @OneToMany(targetEntity=ParkingSpotsEntity.class,mappedBy = "parkingOwnerUser")
     private List<ParkingSpotsEntity> parkingSlots;
-
 
     @Column(name = "user_id", nullable = false)
     public int getUserId() {

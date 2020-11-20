@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "ParkingSpots", schema = "sharad_db")
+@Table(name = "parking_spots", schema = "sharad")
 public class ParkingSpotsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
