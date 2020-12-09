@@ -68,5 +68,9 @@ public class JPAController {
     }
 
 
+    @RequestMapping(value = "/")
+    public String get() {
+        return "welcome";
 
+    }
 }
