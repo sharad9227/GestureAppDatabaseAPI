@@ -70,7 +70,7 @@ public class UserService {
     public ResponseEntity<ResponseObject> loginUser(String email, String password) throws Exception {
         HashMap<String, Object> userDetails = new HashMap<String, Object>();
         try {
-            usersEntity = userRepository.findByEmailAndAndPassword(email, password);
+            usersEntity = userRepository.findByEmailAndPassword(email, password);
             if (usersEntity != null) {
                 if (usersEntity.getActiveStatus() && usersEntity.getApprovedStatus()) {
                     //setting login information in login gesture table

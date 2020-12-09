@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public interface UserRepository extends JpaRepository<UsersEntity, Integer> {
 
-   UsersEntity findByEmailAndAndPassword(String email,String password);
+   UsersEntity findByEmailAndPassword(String email,String password);
 
 
    UsersEntity findByUserId(int userId);
