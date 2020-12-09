@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ResponseObject;
+import com.example.demo.entities.LoginGestureConfigEntity;
 import com.example.demo.entities.UsersEntity;
 import com.example.demo.repo.UserRepository;
 
@@ -46,8 +47,24 @@ public class JPAController {
     @RequestMapping(value = "/users/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseObject> loginUser(@RequestBody UsersEntity requestObject) throws Exception {
             return userService.loginUser(requestObject.getEmail(),requestObject.getPassword());
+    }
 
 
+
+
+    @CrossOrigin
+    @RequestMapping(value="/users/update/gestureconfig",method = RequestMethod.PUT , consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+     public ResponseEntity<ResponseObject> updateUserConfig(@RequestBody LoginGestureConfigEntity requestObject) throws Exception
+    {
+            return userService.updateGestureConfig(requestObject.getConfigId(),requestObject.getConfigJsonData());
+    }
+
+
+    @CrossOrigin
+    @GetMapping("/users/get/{configId}")
+    public ResponseEntity<ResponseObject>  getUserConfig(@PathVariable Integer configId) throws Exception {
+
+        return userService.getConfig(configId);
     }
 
 

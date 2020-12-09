@@ -1,10 +1,13 @@
 package com.example.demo.entities;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@DynamicUpdate
 @Table(name = "Gesture", schema = "sharad")
 public class LoginGestureConfigEntity {
 
@@ -22,7 +25,7 @@ public class LoginGestureConfigEntity {
     private String configJsonData;
 
     @OneToOne
-    @JoinColumn(name="gesture_user_id",insertable=true,updatable = false)
+    @JoinColumn(name="gesture_user_id",insertable=true,updatable = true)
     private UsersEntity users;
 
     public UsersEntity getUsers() {
