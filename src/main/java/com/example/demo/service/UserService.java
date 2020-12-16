@@ -85,6 +85,7 @@ public class UserService {
                             this.loginGestureRepository.save(loginGesture);
                         }
                     } else {
+                        //create user login information
                         loginGesture.setUsers(usersEntity);
                         loginGesture.setConfigJsonData(null);
                         loginGesture.setLastLoggedIn(currentTimestamp);
@@ -128,18 +129,12 @@ public class UserService {
 
                 if (loginGesture != null) {
                     //user exists
-
-
                         String configData = loginGesture.getConfigJsonData();
-
                             loginGesture.setConfigJsonData(configModel);
                             this.loginGestureRepository.save(loginGesture);
                             responseObject.setStatus(200);
                             responseObject.setMessage("Training Model saved Succesfully");
-
-
                 }
-
             return ResponseEntity.ok().body(responseObject);
         }
 
@@ -170,9 +165,56 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
         }
     }
+    /* service method for getting user information */
+    public ResponseEntity<ResponseObject> getUserInformation(int userId) throws Exception
+    {
+        try {
+            HashMap<String, Object> userDetails = new HashMap<String, Object>();
+            usersEntity = userRepository.findById(userId).orElse(null);
+            if (usersEntity != null) {
+                String configData = loginGesture.getConfigJsonData();
+                responseObject.setStatus(200);
+                //putting details in hashmap
+                userDetails.put("userFirstName", usersEntity.getUserFirstName());
+                userDetails.put("userLastName", usersEntity.getUserLastName());
+                userDetails.put("userType",usersEntity.getUserType());
+                userDetails.put("email",usersEntity.getEmail());
 
+              //  userDetails.put("user_last_name")
+                responseObject.setResponseObj(userDetails);
+            }
+            return ResponseEntity.ok().body(responseObject);
+        }
 
+        catch (Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
+        }
+    }
 
+    /* service method for updating user information */
+    public ResponseEntity<ResponseObject> updateUserDetails(int userId, String firstName,String lastName,boolean reqFlag) throws Exception {
+        try {
+            HashMap<String, Object> userDetails = new HashMap<String, Object>();
+            usersEntity = userRepository.findById(userId).orElse(null);
+            if (usersEntity != null) {
+                // null and empty check
+                if (firstName != null && firstName.length() > 0) {
+                    usersEntity.setUserFirstName(firstName);
+                }
+                if (lastName != null && lastName.length() > 0) {
+                    usersEntity.setUserLastName(lastName);
+                }
+                usersEntity.setReqStatus(reqFlag);
+                this.userRepository.save(usersEntity);
+                responseObject.setStatus(200);
+                responseObject.setMessage("Details Saved Successfully");
+            }
+            return ResponseEntity.ok().body(responseObject);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
+        }
+    }
 
 
 }

@@ -50,7 +50,7 @@
         </exclusions>
     </dependency>
 </dependencies>
-
+<!-- Spring boot maven plugin-->
     <build>
         <plugins>
             <plugin>

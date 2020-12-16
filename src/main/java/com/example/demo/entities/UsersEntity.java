@@ -34,9 +34,10 @@ public class UsersEntity {
     private boolean approvedStatus =true;
 
     @Column(name = "latest_updated",nullable = false)
-
     private Timestamp latestUpdated ;
 
+    @Column(name="req_premium",nullable = false)
+    private boolean reqStatus;
 
 
     public int getUserId() {
@@ -110,6 +111,13 @@ public class UsersEntity {
         this.approvedStatus = approvedStatus;
     }
 
+    public boolean isReqStatus() {
+        return reqStatus;
+    }
+
+    public void setReqStatus(boolean reqStatus) {
+        this.reqStatus = reqStatus;
+    }
 
     public Timestamp getLatestUpdated() {
         return latestUpdated;
@@ -137,6 +145,6 @@ public class UsersEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, userFirstName, userLastName, userType, email, password, activeStatus, approvedStatus, latestUpdated);
+        return Objects.hash(userId, reqStatus,userFirstName, userLastName, userType, email, password, activeStatus, approvedStatus, latestUpdated);
     }
 }

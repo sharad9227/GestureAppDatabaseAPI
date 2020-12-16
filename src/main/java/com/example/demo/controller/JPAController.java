@@ -67,10 +67,23 @@ public class JPAController {
         return userService.getConfig(configId);
     }
 
+    @CrossOrigin
+    @GetMapping("/users/get/user/{userId}")
+    public ResponseEntity<ResponseObject> getUserInformation(@PathVariable Integer userId) throws Exception {
 
-    @RequestMapping(value = "/")
-    public String get() {
-        return "welcome";
-
+        return userService.getUserInformation(userId);
     }
+
+
+
+
+
+    @CrossOrigin
+    @RequestMapping(value="/users/update/updateUserDetails",method = RequestMethod.PUT , consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseObject> updateUserDetails(@RequestBody UsersEntity requestObject) throws Exception
+    {
+        return userService.updateUserDetails(requestObject.getUserId(),requestObject.getUserFirstName(),requestObject.getUserLastName(),requestObject.isReqStatus());
+    }
+
+
 }
