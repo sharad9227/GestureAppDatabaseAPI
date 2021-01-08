@@ -3,9 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.entities.LoginGestureConfigEntity;
 import com.example.demo.entities.UsersEntity;
-import com.example.demo.repo.UserRepository;
-
-import com.example.demo.entities.UserdataEntity;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,14 +29,13 @@ public class JPAController {
     }
 
 
-    //get all users
-   /* @RequestMapping(value = "/getall", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    //get all users:: admin page request
+    @CrossOrigin
+    @GetMapping( "users/getall/{userId}")
+    public List<UsersEntity> getAll(@PathVariable Integer userId) throws Exception{
+        return userService.getUsersInfo(userId);
 
-    public List<UsersEntity> getAll() {
-        List<UsersEntity> user = repository.findByUserFirstname("ss");
-        return user;
-
-    }*/
+    }
 
     @CrossOrigin
     @RequestMapping(value = "/users/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -85,5 +79,17 @@ public class JPAController {
         return userService.updateUserDetails(requestObject.getUserId(),requestObject.getUserFirstName(),requestObject.getUserLastName(),requestObject.isReqStatus());
     }
 
+    @CrossOrigin
+    @RequestMapping(value="/users/update/upgradeUser",method = RequestMethod.PUT , consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseObject> upgradeUser(@RequestBody UsersEntity requestObject) throws Exception
+    {
+        return userService.upgradeUser(requestObject.getUserId());
+    }
+    @CrossOrigin
+    @RequestMapping(value="/users/update/deactivateUser",method = RequestMethod.PUT , consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseObject> deactivateUser(@RequestBody UsersEntity requestObject) throws Exception
+    {
+        return userService.deactivateUser(requestObject.getUserId());
+    }
 
 }

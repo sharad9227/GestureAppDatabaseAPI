@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -41,16 +42,14 @@ public class UserService {
                 //success flag
                 responseObject.setStatus(200);
                 responseObject.setMessage("User Registered Successfully. Please use your email id :" + usersEntity.getEmail() + " to log into the application");
-                //responseObject.setResponseObj();
             } else {
-                //error flag :405 Method Not Allowed :Some processing error(id =0) or something
+                //error flag :405 Method Not Allowed :Some processing error
                 responseObject.setStatus(405);
                 responseObject.setMessage("Error occured in Registration.Please try later");
             }
             return ResponseEntity.ok().body(responseObject);
         } catch (Exception e) {
             HttpHeaders responseHeaders = new HttpHeaders();
-            //logic bypassing .. Need to check later by handling exception
             responseObject.setStatus(500);
             responseObject.setMessage("Exception occurred" + e.getMessage());
             Throwable cause = e;
@@ -86,6 +85,7 @@ public class UserService {
                         }
                     } else {
                         //create user login information
+                        loginGesture = new LoginGestureConfigEntity();
                         loginGesture.setUsers(usersEntity);
                         loginGesture.setConfigJsonData(null);
                         loginGesture.setLastLoggedIn(currentTimestamp);
@@ -94,7 +94,9 @@ public class UserService {
                     //putting details in hashmap
                     userDetails.put("user_first_name", usersEntity.getUserFirstName());
                     userDetails.put("userId", usersEntity.getUserId());
-                    userDetails.put("configId",users.getConfigId());
+                    userDetails.put("userType",usersEntity.getUserType());
+                    LoginGestureConfigEntity usersLoggedIn = loginGestureRepository.findByUsers(usersEntity);
+                    userDetails.put("configId",usersLoggedIn.getConfigId());
                     responseObject.setStatus(200);
                     responseObject.setMessage("Active and Approved User");
                     responseObject.setResponseObj(userDetails);
@@ -133,7 +135,7 @@ public class UserService {
                             loginGesture.setConfigJsonData(configModel);
                             this.loginGestureRepository.save(loginGesture);
                             responseObject.setStatus(200);
-                            responseObject.setMessage("Training Model saved Succesfully");
+                            responseObject.setMessage("Training Model saved Successfully");
                 }
             return ResponseEntity.ok().body(responseObject);
         }
@@ -209,6 +211,55 @@ public class UserService {
                 this.userRepository.save(usersEntity);
                 responseObject.setStatus(200);
                 responseObject.setMessage("Details Saved Successfully");
+            }
+            return ResponseEntity.ok().body(responseObject);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
+        }
+    }
+
+
+    /* service method for getting all users information */
+    public List<UsersEntity> getUsersInfo(Integer userId) throws Exception {
+        try {
+            usersEntity = userRepository.findById(userId).orElse(null);
+            return userRepository.findAll();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
+        }
+    }
+
+
+        /* service method for updating normal user to premium user */
+        public ResponseEntity<ResponseObject> upgradeUser(int userId) throws Exception {
+            try {
+                String message="User has been upgraded to Premium";
+                usersEntity = userRepository.findById(userId).orElse(null);
+                if (usersEntity != null) {
+                    // null and empty check
+                    usersEntity.setUserType("Special");
+                    this.userRepository.save(usersEntity);
+                    responseObject.setStatus(200);
+                    responseObject.setMessage(message);
+                }
+                return ResponseEntity.ok().body(responseObject);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
+            }
+        }
+
+
+    /* service method for deactivating user */
+    public ResponseEntity<ResponseObject> deactivateUser(int userId) throws Exception {
+        try {
+            String message="User has been deactivated";
+            usersEntity = userRepository.findById(userId).orElse(null);
+            if (usersEntity != null) {
+                // null and empty check
+                usersEntity.setActiveStatus(false);
+                this.userRepository.save(usersEntity);
+                responseObject.setStatus(200);
+                responseObject.setMessage(message);
             }
             return ResponseEntity.ok().body(responseObject);
         } catch (Exception e) {
