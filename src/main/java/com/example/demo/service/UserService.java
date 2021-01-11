@@ -45,13 +45,15 @@ public class UserService {
             } else {
                 //error flag :405 Method Not Allowed :Some processing error
                 responseObject.setStatus(405);
-                responseObject.setMessage("Error occured in Registration.Please try later");
+                responseObject.setMessage("Error occurred in Registration.Please try later");
             }
+            responseObject.setResponseObj(null);
             return ResponseEntity.ok().body(responseObject);
         } catch (Exception e) {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseObject.setStatus(500);
             responseObject.setMessage("Exception occurred" + e.getMessage());
+            responseObject.setResponseObj(null);
             Throwable cause = e;
             if (cause != null && e.getCause().getCause().getMessage().contains("Duplicate entry")) {
                 errorMessage = "Duplicate entry.Email already exists";
@@ -70,6 +72,7 @@ public class UserService {
         HashMap<String, Object> userDetails = new HashMap<String, Object>();
         try {
             usersEntity = userRepository.findByEmailAndPassword(email, password);
+            UsersEntity  usersEntityCheck=userRepository.findByEmail(email);
             if (usersEntity != null) {
                 if (usersEntity.getActiveStatus() && usersEntity.getApprovedStatus()) {
                     //setting login information in login gesture table
@@ -101,11 +104,27 @@ public class UserService {
                     responseObject.setMessage("Active and Approved User");
                     responseObject.setResponseObj(userDetails);
                 }
-            } else {
+                else if(!usersEntity.getActiveStatus())
+                {
+                    responseObject.setStatus(401);
+                    responseObject.setMessage("Unauthorized User!");
+                    responseObject.setResponseObj(null);
+                }
+            }
+
+
+
+
+            else {
                 //error flag :405 Method Not Allowed :Some processing error
                 responseObject.setStatus(405);
                 responseObject.setResponseObj(null);
-                responseObject.setMessage("Username or password is incorrect.Please try again");
+                if(usersEntityCheck!=null) {
+                    responseObject.setMessage("Email or password is incorrect.Please try again");
+                }
+                else{
+                    responseObject.setMessage("Invalid User. Please Register first");
+                }
             }
             return ResponseEntity.ok().body(responseObject);
         }
@@ -122,12 +141,8 @@ public class UserService {
 
     public ResponseEntity<ResponseObject> updateGestureConfig(int configId, String configModel) throws Exception {
         try {
-            //usersEntity = userRepository.findByUserId(userId);
-            //change it to special later on
 
             loginGesture = loginGestureRepository.findById(configId).orElse(null);
-
-
 
                 if (loginGesture != null) {
                     //user exists
@@ -136,6 +151,7 @@ public class UserService {
                             this.loginGestureRepository.save(loginGesture);
                             responseObject.setStatus(200);
                             responseObject.setMessage("Training Model saved Successfully");
+                            responseObject.setResponseObj(null);
                 }
             return ResponseEntity.ok().body(responseObject);
         }
@@ -182,7 +198,7 @@ public class UserService {
                 userDetails.put("userType",usersEntity.getUserType());
                 userDetails.put("email",usersEntity.getEmail());
 
-              //  userDetails.put("user_last_name")
+
                 responseObject.setResponseObj(userDetails);
             }
             return ResponseEntity.ok().body(responseObject);
@@ -211,6 +227,7 @@ public class UserService {
                 this.userRepository.save(usersEntity);
                 responseObject.setStatus(200);
                 responseObject.setMessage("Details Saved Successfully");
+                responseObject.setResponseObj(null);
             }
             return ResponseEntity.ok().body(responseObject);
         } catch (Exception e) {
@@ -223,7 +240,12 @@ public class UserService {
     public List<UsersEntity> getUsersInfo(Integer userId) throws Exception {
         try {
             usersEntity = userRepository.findById(userId).orElse(null);
-            return userRepository.findAll();
+            if(usersEntity.getUserType().equals("Admin")) {
+                return userRepository.findAll();
+            }
+            else{
+              return null;
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getLocalizedMessage(), e);
         }
@@ -238,9 +260,11 @@ public class UserService {
                 if (usersEntity != null) {
                     // null and empty check
                     usersEntity.setUserType("Special");
+                    usersEntity.setReqStatus(false);
                     this.userRepository.save(usersEntity);
                     responseObject.setStatus(200);
                     responseObject.setMessage(message);
+                    responseObject.setResponseObj(null);
                 }
                 return ResponseEntity.ok().body(responseObject);
             } catch (Exception e) {
@@ -260,6 +284,7 @@ public class UserService {
                 this.userRepository.save(usersEntity);
                 responseObject.setStatus(200);
                 responseObject.setMessage(message);
+                responseObject.setResponseObj(null);
             }
             return ResponseEntity.ok().body(responseObject);
         } catch (Exception e) {
